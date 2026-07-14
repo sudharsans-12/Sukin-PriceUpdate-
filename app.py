@@ -41,6 +41,22 @@ def _column_picker(label: str, options: list[str], key: str, allow_none: bool = 
     return selection
 
 
+def _make_columns_unique(df: pd.DataFrame) -> pd.DataFrame:
+    """Rename duplicate columns by appending a suffix (e.g., _1, _2)."""
+    cols = []
+    count = {}
+    for col in df.columns:
+        col_str = str(col)
+        if col_str in count:
+            count[col_str] += 1
+            cols.append(f"{col_str}_{count[col_str]}")
+        else:
+            count[col_str] = 0
+            cols.append(col_str)
+    df.columns = cols
+    return df
+
+
 def main() -> None:
     st.title("💲 Price Update Automation Tool")
     st.caption(
@@ -85,6 +101,7 @@ def main() -> None:
         marketplace_df = MarketplaceReportLoader.load(
             marketplace_bytes, mkt_sheet_name, header_row=mkt_header_row - 1
         )
+        marketplace_df = _make_columns_unique(marketplace_df)
     except DataLoadError as exc:
         st.error(str(exc))
         return
@@ -105,6 +122,7 @@ def main() -> None:
     try:
         master_loader = MasterInputLoader(service_account_info=service_account_info)
         master_df = master_loader.load(sheet_url, worksheet_name=worksheet_name or None)
+        master_df = _make_columns_unique(master_df)
     except DataLoadError as exc:
         st.error(str(exc))
         return
