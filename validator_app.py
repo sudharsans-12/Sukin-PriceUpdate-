@@ -10,7 +10,7 @@ st.caption(
     "with the Google Sheets Master Reference file."
 )
 
-# --- GitHub & Deployment Instructions in Sidebar ---
+# --- GitHub & Deployment Instructions ---
 with st.sidebar:
     st.header(":gear: Deployment Guide")
     st.markdown(
